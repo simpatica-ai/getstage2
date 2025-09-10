@@ -24,33 +24,42 @@ functions.http('getstage2', async (req, res) => {
       return res.status(400).send({ error: 'Invalid request body' });
     }
 
-    const { virtueName, virtueDef, characterDefectAnalysis, stage1MemoContent } = req.body;
+    const { virtueName, virtueDef, characterDefectAnalysis, stage1MemoContent, stage2MemoContent, stage1Complete } = req.body;
 
     // Validate required fields
     if (!virtueName || !virtueDef || !characterDefectAnalysis) {
       return res.status(400).send({ error: 'Missing required fields: virtueName, virtueDef, and characterDefectAnalysis are required.' });
     }
 
-    // --- NEW STAGE 1 PROMPT ---
-    const prompt = `
-      You are an empathetic and wise recovery coach. Your task is to generate a motivating, introspective, and contextually aware writing prompt for a user working on Stage 1 of their virtue development, which is "Dismantling". Dismantling is not a friendly process, and inviting brutal honesty is key. Empathy is offered as we are more than our mistakes.
+    // Check if Stage 1 is complete
+    if (!stage1Complete || !stage1MemoContent || stage1MemoContent.trim().length < 50) {
+      return res.status(200).send({
+        prompt: "Before beginning Stage 2 (Building), please complete Stage 1 (Dismantling) first. Stage 1 provides the foundation for understanding what needs to change before you can build new, healthier habits. Return to Stage 1 and mark it as complete when you've finished your reflection.",
+        requiresStage1: true
+      });
+    }
 
-      **Objective of Dismantling:** Dismantling is the introspective practice of recognizing one's inner flaws (character defects), acknowledging the harm they cause, and making a resolute commitment to actively cease acting upon them.
+    // --- STAGE 2 BUILDING PROMPT ---
+    const prompt = `
+      You are an empathetic and wise recovery coach. Your task is to generate a focused, actionable writing prompt for a user working on Stage 2 of their virtue development: "Building".
+
+      **Building Virtue Definition:** The building virtue process is a cycle of intentional, daily work to align your actions with your values. Reflection is a cornerstone of this process, encompassing a series of practices to deepen self-awareness and learning. It includes evening journaling to review your day and note successes, challenges, and lessons learned related to the virtue. This practice is your personal space for processing and understanding your growth. It involves honestly acknowledging struggles but pairing that with kindness. You view lapses not as failures but as valuable learning opportunities. The goal is to collect raw data for understanding your growth and to reinforce successes.
 
       **USER CONTEXT:**
       - **Virtue:** ${virtueName}
       - **Virtue Definition:** ${virtueDef}
-      - **AI Analysis of User's Character Defects:** "${characterDefectAnalysis}"
-      - **User's Writing Progress on Stage 1 So Far:** """${stage1MemoContent || "The user has not started writing for this stage yet."}"""
+      - **Stage 1 Completed Work:** """${stage1MemoContent}"""
+      - **Stage 2 Progress:** """${stage2MemoContent || "The user has not started Stage 2 writing yet."}"""
 
       **YOUR TASK:**
-      Based on ALL the information above, generate a thoughtful and encouraging prompt of about 250 words. Your response MUST do the following:
-      1.  Acknowledge the user's current position in their journey with this virtue, referencing the provided AI analysis of their character defects.
-      2.  If the user has already written something, briefly acknowledge their progress and insights.
-      3.  Gently guide their focus toward a specific character defect mentioned in the analysis. Explain how this specific defect acts as a barrier to practicing the virtue of ${virtueName}.
-      4.  Conclude with a direct, open-ended question or a reflective task. This should encourage the user to explore a specific memory, feeling, or pattern of behavior related to that defect. The goal is to help them see the defect clearly without judgment.
+      Generate a focused writing prompt (limit 200 words) that:
+      1. Acknowledges their Stage 1 insights
+      2. Identifies ONE specific, limited writing topic for today's reflection
+      3. Focuses on building new positive habits related to ${virtueName}
+      4. Encourages reflection on recent successes, challenges, triggers, or lessons learned
+      5. Ends with a specific question about applying lessons to future actions
 
-      Frame your response with empathy and wisdom. You are a trusted companion on their journey of self-discovery and growth. Refer to the user as "you".
+      Keep the scope narrow and actionable. Frame with empathy and encouragement.
     `;
 
     // --- Model Execution Logic (Unchanged) ---
