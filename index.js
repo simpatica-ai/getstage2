@@ -24,7 +24,7 @@ functions.http('getstage2', async (req, res) => {
       return res.status(400).send({ error: 'Invalid request body' });
     }
 
-    const { virtueName, virtueDef, characterDefectAnalysis, stage1MemoContent, stage2MemoContent, stage1Complete } = req.body;
+    const { virtueName, virtueDef, characterDefectAnalysis, stage1MemoContent, stage2MemoContent, stage1Complete, previousPrompts } = req.body;
 
     // Validate required fields
     if (!virtueName || !virtueDef || !characterDefectAnalysis) {
@@ -50,12 +50,20 @@ functions.http('getstage2', async (req, res) => {
       - **Virtue Definition:** ${virtueDef}
       - **Stage 1 Completed Work:** """${stage1MemoContent}"""
       - **Stage 2 Progress:** """${stage2MemoContent || "The user has not started Stage 2 writing yet."}"""
+      - **Previous Prompts Given:** ${previousPrompts ? `"""${JSON.stringify(previousPrompts)}"""` : "No previous prompts for this virtue stage."}
+
+      **COMPLETION CHECK:** Analyze the user's Stage 2 writing progress. If they have adequately built new positive behaviors and practices to replace dismantled defects, and demonstrate consistent reflection on successes/challenges, acknowledge completion and suggest readiness for Stage 3 (Practice).
 
       **YOUR TASK:**
       Generate a focused writing prompt (limit 200 words) that:
-      1. Acknowledges their Stage 1 insights
-      2. Identifies ONE specific, limited writing topic for today's reflection
-      3. Focuses on building new positive habits related to ${virtueName}
+      ${stage2MemoContent ? 
+        `1. Acknowledges their existing Stage 2 progress and insights, referencing previous prompts if relevant
+         2. Either: (a) If building appears complete, congratulate them and suggest readiness for Stage 3, OR (b) Focus on areas still needing development
+         3. If incomplete, identify ONE specific building topic for today's reflection` 
+        : 
+        `1. Acknowledges their Stage 1 insights and transition to building
+         2. Identifies ONE specific, limited writing topic for today's reflection
+         3. Focuses on building new positive habits related to ${virtueName}`}
       4. Encourages reflection on recent successes, challenges, triggers, or lessons learned
       5. Ends with a specific question about applying lessons to future actions
 
