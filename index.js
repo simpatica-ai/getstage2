@@ -45,6 +45,8 @@ functions.http('getstage2', async (req, res) => {
 
       **Building Virtue Definition:** The building virtue process is a cycle of intentional, daily work to align your actions with your values. Reflection is a cornerstone of this process, encompassing a series of practices to deepen self-awareness and learning. It includes evening journaling to review your day and note successes, challenges, and lessons learned related to the virtue. This practice is your personal space for processing and understanding your growth. It involves honestly acknowledging struggles but pairing that with kindness. You view lapses not as failures but as valuable learning opportunities. The goal is to collect raw data for understanding your growth and to reinforce successes.
 
+      **SPELLING AND GRAMMAR ARE VERY IMPORTANT.  Review all responses for spelling and grammar.
+
       **USER CONTEXT:**
       - **Virtue:** ${virtueName}
       - **Virtue Definition:** ${virtueDef}
