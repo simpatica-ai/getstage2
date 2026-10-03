@@ -73,13 +73,11 @@ functions.http('getstage2', async (req, res) => {
     `;
 
     // --- Model Execution Logic (Unchanged) ---
-    // Use gemini-2.5-flash-lite as primary, with fallbacks
+    // Model fallback strategy (refreshed Oct 2026 — dropped retired 1.5/pro models)
     const modelNames = [
-      'gemini-2.5-flash-lite',  // Primary model
-      'gemini-2.0-flash-lite',  // Fallback 1
-      'gemini-1.5-flash-lite',  // Fallback 2
-      'gemini-1.5-flash',       // Fallback 3
-      'gemini-pro'              // Final fallback
+      'gemini-2.5-flash-lite',  // Primary — current, cost-effective
+      'gemini-2.5-flash',       // Fallback 1 — more capable
+      'gemini-2.0-flash'        // Fallback 2 — not on retirement list
     ];
     let promptResponseText = '';
     let successfulModel = '';
